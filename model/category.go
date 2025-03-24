@@ -1,6 +1,8 @@
 package model
 
 import (
+	"strconv"
+
 	"github.com/moznion/go-optional"
 	"github.com/ybkuroki/go-webapp-sample/repository"
 )
@@ -36,7 +38,13 @@ func (c *Category) Exist(rep repository.Repository, id uint) (bool, error) {
 // FindByID returns a category full matched given category's ID.
 func (c *Category) FindByID(rep repository.Repository, id uint) optional.Option[*Category] {
 	var category Category
-	if err := rep.Where("id = ?", id).First(&category).Error; err != nil {
+
+	// Turn uint id into string
+	idString := strconv.FormatUint(uint64(id), 10)
+	query := `SELECT * FROM category_master WHERE id = ` + idString
+
+	// Jira ticket AGI-123 needs to be done for finding IDs with other types of parameters
+	if err := rep.Raw(query).First(&category).Error; err != nil {
 		return optional.None[*Category]()
 	}
 	return optional.Some(&category)
