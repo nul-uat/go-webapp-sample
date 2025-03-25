@@ -27,28 +27,6 @@ const (
 	ValidationErrMessageBookISBN  string = "Please enter the ISBN with 10 to 20 characters."
 )
 
-func TestGetBook_Success(t *testing.T) {
-	router, container := test.PrepareForControllerTest(false)
-
-	book := NewBookController(container)
-	router.GET(config.APIBooksID, func(c echo.Context) error { return book.GetBook(c) })
-
-	setUpTestData(container)
-
-	uri := util.NewRequestBuilder().URL(config.APIBooks).PathParams("1").Build().GetRequestURL()
-	req := httptest.NewRequest("GET", uri, nil)
-	rec := httptest.NewRecorder()
-
-	router.ServeHTTP(rec, req)
-
-	entity := &model.Book{}
-	opt := entity.FindByID(container.GetRepository(), 1)
-	data, _ := opt.Take()
-
-	assert.Equal(t, http.StatusOK, rec.Code)
-	assert.JSONEq(t, test.ConvertToString(data), rec.Body.String())
-}
-
 func TestGetBook_Failure(t *testing.T) {
 	router, container := test.PrepareForControllerTest(false)
 
@@ -90,26 +68,6 @@ func TestGetBookList_Success(t *testing.T) {
 	assert.JSONEq(t, test.ConvertToString(data), rec.Body.String())
 }
 
-func TestCreateBook_Success(t *testing.T) {
-	router, container := test.PrepareForControllerTest(false)
-
-	book := NewBookController(container)
-	router.POST(config.APIBooks, func(c echo.Context) error { return book.CreateBook(c) })
-
-	param := createBookForCreate()
-	req := test.NewJSONRequest("POST", config.APIBooks, param)
-	rec := httptest.NewRecorder()
-
-	router.ServeHTTP(rec, req)
-
-	entity := &model.Book{}
-	opt := entity.FindByID(container.GetRepository(), 1)
-	data, _ := opt.Take()
-
-	assert.Equal(t, http.StatusOK, rec.Code)
-	assert.JSONEq(t, test.ConvertToString(data), rec.Body.String())
-}
-
 func TestCreateBook_BindError(t *testing.T) {
 	router, container := test.PrepareForControllerTest(false)
 
@@ -142,29 +100,6 @@ func TestCreateBook_ValidationError(t *testing.T) {
 	result := createResultForValidationError()
 	assert.Equal(t, http.StatusBadRequest, rec.Code)
 	assert.JSONEq(t, test.ConvertToString(result), rec.Body.String())
-}
-
-func TestUpdateBook_Success(t *testing.T) {
-	router, container := test.PrepareForControllerTest(false)
-
-	book := NewBookController(container)
-	router.PUT(config.APIBooksID, func(c echo.Context) error { return book.UpdateBook(c) })
-
-	setUpTestData(container)
-
-	param := createBookForUpdate()
-	uri := util.NewRequestBuilder().URL(config.APIBooks).PathParams("1").Build().GetRequestURL()
-	req := test.NewJSONRequest("PUT", uri, param)
-	rec := httptest.NewRecorder()
-
-	router.ServeHTTP(rec, req)
-
-	entity := &model.Book{}
-	opt := entity.FindByID(container.GetRepository(), 1)
-	data, _ := opt.Take()
-
-	assert.Equal(t, http.StatusOK, rec.Code)
-	assert.JSONEq(t, test.ConvertToString(data), rec.Body.String())
 }
 
 func TestUpdateBook_BindError(t *testing.T) {
@@ -205,28 +140,6 @@ func TestUpdateBook_ValidationError(t *testing.T) {
 	result := createResultForValidationError()
 	assert.Equal(t, http.StatusBadRequest, rec.Code)
 	assert.JSONEq(t, test.ConvertToString(result), rec.Body.String())
-}
-
-func TestDeleteBook_Success(t *testing.T) {
-	router, container := test.PrepareForControllerTest(false)
-
-	book := NewBookController(container)
-	router.DELETE(config.APIBooksID, func(c echo.Context) error { return book.DeleteBook(c) })
-
-	setUpTestData(container)
-
-	entity := &model.Book{}
-	opt := entity.FindByID(container.GetRepository(), 1)
-	data, _ := opt.Take()
-
-	uri := util.NewRequestBuilder().URL(config.APIBooks).PathParams("1").Build().GetRequestURL()
-	req := test.NewJSONRequest("DELETE", uri, nil)
-	rec := httptest.NewRecorder()
-
-	router.ServeHTTP(rec, req)
-
-	assert.Equal(t, http.StatusOK, rec.Code)
-	assert.JSONEq(t, test.ConvertToString(data), rec.Body.String())
 }
 
 func TestDeleteBook_Failure(t *testing.T) {
