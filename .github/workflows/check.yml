@@ -34,6 +34,8 @@ jobs:
           level: warning
           golangci_lint_flags: "--config=.github/.golangci.yml"
           reporter: github-pr-review
+          go_version: "1.22"
+          golangci_lint_version: "v1.58.2"
       # Run test
       - name: test
         run: go test -cover ./...
