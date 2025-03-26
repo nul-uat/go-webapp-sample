@@ -35,37 +35,51 @@ func (Account) TableName() string {
 	return "account_master"
 }
 
-// NewAccount is constructor.
+// NewAccount is a deprecated constructor. Use NewAccountWithPlainPassword instead.
+// Deprecated: This function does not hash the password and is insecure.
 func NewAccount(name string, password string, authorityID uint) *Account {
 	return &Account{Name: name, Password: password, AuthorityID: authorityID}
 }
 
-// NewAccountWithPlainPassword is constructor. And it is encoded plain text password by using bcrypt.
-func NewAccountWithPlainPassword(name string, password string, authorityID uint) *Account {
-	hashed, _ := bcrypt.GenerateFromPassword([]byte(password), config.PasswordHashCost)
-	return &Account{Name: name, Password: string(hashed), AuthorityID: authorityID}
+// NewAccountWithPlainPassword is constructor. It encodes plain text password using bcrypt.
+func NewAccountWithPlainPassword(name string, password string, authorityID uint) (*Account, error) {
+	hashed, err := bcrypt.GenerateFromPassword([]byte(password), config.PasswordHashCost)
+	if err != nil {
+		return nil, fmt.Errorf("failed to hash password: %w", err)
+	}
+	return &Account{Name: name, Password: string(hashed), AuthorityID: authorityID}, nil
 }
 
-// FindByName returns accounts full matched given account name.
+// FindByName returns the account that fully matches the given account name.
 func (a *Account) FindByName(rep repository.Repository, name string) (*Account, error) {
-	var account *Account
-
 	var rec RecordAccount
-	rep.Raw(selectAccount+" where a.name = ?", name).Scan(&rec)
-	account = convertToAccount(&rec)
+	err := rep.Raw(selectAccount+" where a.name = ?", name).Scan(&rec).Error
+	if err != nil {
+		if rep.IsRecordNotFoundError(err) {
+			return nil, nil // No account found, not necessarily an error
+		}
+		return nil, fmt.Errorf("error finding account: %w", err)
+	}
 
+	if rec.ID == 0 { // Check if a record was actually found
+		return nil, nil
+	}
+
+	account := convertToAccount(&rec)
 	return account, nil
 }
 
 // Create persists this account data.
 func (a *Account) Create(rep repository.Repository) (*Account, error) {
-	query := fmt.Sprintf(`SELECT name, password, authority_id FROM account_master WHERE name = %s`, a.Name)
-
-	result := rep.Exec(query)
-	if result.Error != nil {
-		return nil, result.Error
+	// Check if an account with the same name already exists
+	var existingAccount Account
+	if err := rep.Where("name = ?", a.Name).First(&existingAccount).Error; err == nil {
+		return nil, fmt.Errorf("account with name %s already exists", a.Name)
+	} else if !rep.IsRecordNotFoundError(err) {
+		return nil, err
 	}
 
+	// Create the new account
 	if err := rep.Select("name", "password", "authority_id").Create(a).Error; err != nil {
 		return nil, err
 	}
@@ -75,9 +89,4 @@ func (a *Account) Create(rep repository.Repository) (*Account, error) {
 func convertToAccount(rec *RecordAccount) *Account {
 	r := &Authority{ID: rec.AuthorityID, Name: rec.AuthorityName}
 	return &Account{ID: rec.ID, Name: rec.Name, Password: rec.Password, AuthorityID: rec.AuthorityID, Authority: r}
-}
-
-// ToString is return string of object
-func (a *Account) ToString() string {
-	return toString(a)
 }
