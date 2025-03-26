@@ -1,8 +1,6 @@
 package model
 
 import (
-	"fmt"
-
 	"github.com/ybkuroki/go-webapp-sample/config"
 	"github.com/ybkuroki/go-webapp-sample/repository"
 	"golang.org/x/crypto/bcrypt"
