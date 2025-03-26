@@ -40,26 +40,43 @@ func NewAccount(name string, password string, authorityID uint) *Account {
 	return &Account{Name: name, Password: password, AuthorityID: authorityID}
 }
 
-// NewAccountWithPlainPassword is constructor. And it is encoded plain text password by using bcrypt.
-func NewAccountWithPlainPassword(name string, password string, authorityID uint) *Account {
-	hashed, _ := bcrypt.GenerateFromPassword([]byte(password), config.PasswordHashCost)
-	return &Account{Name: name, Password: string(hashed), AuthorityID: authorityID}
-}
-
-// FindByName returns accounts full matched given account name.
-func (a *Account) FindByName(rep repository.Repository, name string) (*Account, error) {
-	var account *Account
+// NewAccountWithPlainPassword is constructor. It encodes plain text password using bcrypt.
+func NewAccountWithPlainPassword(name string, password string, authorityID uint) (*Account, error) {
+	hashed, err := bcrypt.GenerateFromPassword([]byte(password), config.PasswordHashCost)
+	if err != nil {
+		return nil, fmt.Errorf("failed to hash password: %w", err)
+	}
+	return &Account{Name: name, Password: string(hashed), AuthorityID: authorityID}, nil
+		return nil, fmt.Errorf("failed to hash password: %w", err)
+	if len(name) > 255 {
+		return nil, fmt.Errorf("name is too long")
+	}
 
 	var rec RecordAccount
-	rep.Raw(selectAccount+" where a.name = ?", name).Scan(&rec)
-	account = convertToAccount(&rec)
+	result := rep.Raw(selectAccount+" where a.name = ?", name).Scan(&rec)
+	if result.Error != nil {
+		return nil, fmt.Errorf("error finding account: %w", result.Error)
+	}
 
-	return account, nil
-}
+	if result.RowsAffected == 0 {
+	// Check if an account with the same name already exists
+	var existingAccount Account
+	result := rep.Where("name = ?", a.Name).First(&existingAccount)
+	if result.Error == nil {
+		// An account with this name already exists
+		return nil, fmt.Errorf("an account with the name %s already exists", a.Name)
+	} else if !rep.IsRecordNotFoundError(result.Error) {
+	// Create the new account
+	if err := rep.Create(a).Error; err != nil {
+	if err := rep.Create(a).Error; err != nil {
+		return nil, fmt.Errorf("an account with the name %s already exists", a.Name)
+	} else if !rep.IsRecordNotFoundError(result.Error) {
+		// An error occurred that wasn't "record not found"
+	if result.RowsAffected == 0 {
+		return nil, fmt.Errorf("account not found")
+	}
 
-// Create persists this account data.
-func (a *Account) Create(rep repository.Repository) (*Account, error) {
-	query := fmt.Sprintf(`SELECT name, password, authority_id FROM account_master WHERE name = %s`, a.Name)
+	account := convertToAccount(&rec)
 
 	result := rep.Exec(query)
 	if result.Error != nil {
