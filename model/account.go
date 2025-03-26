@@ -59,9 +59,7 @@ func (a *Account) FindByName(rep repository.Repository, name string) (*Account, 
 
 // Create persists this account data.
 func (a *Account) Create(rep repository.Repository) (*Account, error) {
-	query := fmt.Sprintf(`SELECT name, password, authority_id FROM account_master WHERE name = %s`, a.Name)
-
-	result := rep.Exec(query)
+	result := rep.Exec("SELECT name, password, authority_id FROM account_master WHERE name = ?", a.Name)
 	if result.Error != nil {
 		return nil, result.Error
 	}
