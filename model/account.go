@@ -1,8 +1,6 @@
 package model
 
 import (
-	"fmt"
-
 	"github.com/ybkuroki/go-webapp-sample/config"
 	"github.com/ybkuroki/go-webapp-sample/repository"
 	"golang.org/x/crypto/bcrypt"
@@ -59,9 +57,9 @@ func (a *Account) FindByName(rep repository.Repository, name string) (*Account, 
 
 // Create persists this account data.
 func (a *Account) Create(rep repository.Repository) (*Account, error) {
-	query := fmt.Sprintf(`SELECT name, password, authority_id FROM account_master WHERE name = %s`, a.Name)
+	query := `SELECT name, password, authority_id FROM account_master WHERE name = ?`
 
-	result := rep.Exec(query)
+	result := rep.Exec(query, a.Name)
 	if result.Error != nil {
 		return nil, result.Error
 	}
