@@ -1,8 +1,6 @@
 package model
 
 import (
-	"fmt"
-
 	"github.com/moznion/go-optional"
 	"github.com/ybkuroki/go-webapp-sample/repository"
 )
