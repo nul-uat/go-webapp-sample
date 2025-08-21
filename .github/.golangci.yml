@@ -111,4 +111,4 @@ linters:
 # https://github.com/golangci/golangci/wiki/Configuration
 # latest version: https://github.com/golangci/golangci-lint
 service:
-  golangci-lint-version: 1.58.2
+  golangci-lint-version: 1.64.8

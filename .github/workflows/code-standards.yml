@@ -7,44 +7,17 @@ on:
     branches: [ main, master ]
 
 jobs:
-  lint:
-    name: Code Quality Check
+  golangci:
     runs-on: ubuntu-latest
+    name: lint
     steps:
       - uses: actions/checkout@v3
-
-      - name: Set up Go
-        uses: actions/setup-go@v4
+      - uses: actions/setup-go@v4
         with:
-          go-version: '1.21'
-          
-      - name: Install linting tools
-        run: |
-          go install golang.org/x/tools/cmd/goimports@latest
-          go install honnef.co/go/tools/cmd/staticcheck@latest
-          go install golang.org/x/tools/cmd/superlinter@latest
-
-      - name: Check formatting
-        run: |
-          echo "Checking code formatting..."
-          goimports -w .
-          
-      - name: Run static analysis
-        run: |
-          echo "Running static code analysis..."
-          staticcheck ./...
-          
-      - name: Verify code standards
-        run: |
-          echo "Installing SuperLinter"
-          echo "installing golang ci"
-          echo "Checking code formatting..."
-          echo "Verifying code standards..."
-          echo "Running SuperLinter..."
-          superlinter --strict --config=.golangci.yml
-
-      - name: Generate lint report
-        if: always()
-        run: |
-          echo "Generating lint report..."
-          echo "Found code style violations" 
+          go-version: '1.24.6'
+          cache: true
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.64.8
+          args: --timeout=2m
