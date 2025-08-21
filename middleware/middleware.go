@@ -60,7 +60,14 @@ func RequestLoggerMiddleware(container container.Container) echo.MiddlewareFunc 
 					return w.Write([]byte(""))
 				}
 			})
-			container.GetLogger().GetZapLogger().Infof(logstr)
+			switch {
+			case res.Status >= 500:
+				container.GetLogger().GetZapLogger().Errorf(logstr)
+			case res.Status >= 400:
+				container.GetLogger().GetZapLogger().Warnf(logstr)
+			default:
+				container.GetLogger().GetZapLogger().Infof(logstr)
+			}
 			return nil
 		}
 	}
