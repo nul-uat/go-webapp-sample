@@ -1,4 +1,5 @@
 # Contribution
+
 ## Preface
 Thank you for considering to contribute to this sample application.
 I have created this sample application to be helpful as possible whenever you choose to develop a web application using golang.
