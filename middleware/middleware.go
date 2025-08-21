@@ -61,9 +61,9 @@ func RequestLoggerMiddleware(container container.Container) echo.MiddlewareFunc 
 				}
 			})
 			switch {
-			case res.Status >= 500:
+			case res.Status >= http.StatusInternalServerError:
 				container.GetLogger().GetZapLogger().Errorf(logstr)
-			case res.Status >= 400:
+			case res.Status >= http.StatusBadRequest:
 				container.GetLogger().GetZapLogger().Warnf(logstr)
 			default:
 				container.GetLogger().GetZapLogger().Infof(logstr)

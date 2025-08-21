@@ -7,17 +7,33 @@ on:
     branches: [ main, master ]
 
 jobs:
-  golangci:
+  check:
+    name: check
     runs-on: ubuntu-latest
-    name: lint
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-go@v4
+      # Set up GOPATH
+      - name: set up
+        uses: actions/setup-go@v5
         with:
-          go-version: '1.24.6'
-          cache: true
+          go-version: '1.24'
+        id: go
+      # Check out this repository
+      - name: checkout
+        uses: actions/checkout@v4
+      # Store cache
+      - name: cache
+        uses: actions/cache@v4
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      # Run golangci-lint using reviewdog
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
+        uses: reviewdog/action-golangci-lint@v2
         with:
-          version: v1.64.8
-          args: --timeout=2m
+          github_token: ${{ secrets.github_token }}
+          golangci_lint_flags: "--config=.github/.golangci.yml"
+          reporter: github-pr-review
+          go_version: "1.24"
+          golangci_lint_version: "v1.64.8"
