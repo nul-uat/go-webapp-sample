@@ -1,0 +1,458 @@
+{
+  "RepoConfigMetaData" : [
+  ],
+  "monolithJsonPath" : [
+  ],
+  "language" : "go",
+  "privadoLanguageEngineVersion" : "0.1.5",
+  "privadoMainVersion" : "1.3.73-392\n",
+  "gitMetadata" : {
+    "branchName" : "master",
+    "commitId" : "21b3cf621eb667728cce35af47f92b2b1e9ac803",
+    "remoteUrl" : "https://x-access-token:ghs_Sa2tGN9vS88UFaOWwIcJROWAHsKbJc0wacPD@github.com/nul-uat/go-webapp-sample.git"
+  },
+  "violations" : [
+  ],
+  "PropertyFileSkippedByDirCount" : {
+    "currentFilesInDirLimit" : "10",
+    "skipList" : [
+    ]
+  },
+  "androidPermissions" : [
+  ],
+  "privadoCoreVersion" : "1.1.175-78",
+  "sinks" : [
+    {
+      "sourceType" : "Sinks",
+      "sinkType" : "storages",
+      "id" : "Storage.ORM.GORM.Read",
+      "name" : "GORM (Read)",
+      "domains" : [
+        "gorm.io"
+      ],
+      "apiUrl" : [
+      ],
+      "databaseDetails" : {
+        "dbName" : "",
+        "dbVendor" : "",
+        "dbLocation" : "",
+        "dbOperation" : "",
+        "configFile" : "",
+        "schema" : null
+      }
+    },
+    {
+      "sourceType" : "Sinks",
+      "sinkType" : "storages",
+      "id" : "Storages.ORM.GORM.Write",
+      "name" : "GORM (Write)",
+      "domains" : [
+        "gorm.io"
+      ],
+      "apiUrl" : [
+      ],
+      "databaseDetails" : {
+        "dbName" : "",
+        "dbVendor" : "",
+        "dbLocation" : "",
+        "dbOperation" : "",
+        "configFile" : "",
+        "schema" : null
+      }
+    },
+    {
+      "sourceType" : "Sinks",
+      "sinkType" : "third_parties",
+      "id" : "Sinks.ThirdParties.API",
+      "name" : "Third Party API",
+      "domains" : [
+      ],
+      "apiUrl" : [
+        "API"
+      ],
+      "databaseDetails" : {
+        "dbName" : "",
+        "dbVendor" : "",
+        "dbLocation" : "",
+        "dbOperation" : "",
+        "configFile" : "",
+        "schema" : null
+      }
+    }
+  ],
+  "privadoCLIVersion" : "Not Detected",
+  "collections" : [
+  ],
+  "repoName" : "repo",
+  "processing" : [
+    {
+      "sourceId" : "Data.Sensitive.AccountData.AccountPassword",
+      "occurrences" : [
+        {
+          "sample" : "Password",
+          "lineNumber" : 8,
+          "columnNumber" : 11,
+          "fileName" : "model/dto/account.go",
+          "excerpt" : "import \"encoding/json\"\n\n// LoginDto defines a data transfer object for login.\ntype LoginDto struct {\n\tUserName string `json:\"username\"`\n\tPassword string `json:\"password\"` /* <===  */ \n}\n\n// NewLoginDto is constructor.\nfunc NewLoginDto() *LoginDto {\n\treturn &LoginDto{}",
+          "arguments" : null
+        },
+        {
+          "sample" : "password",
+          "lineNumber" : 45,
+          "columnNumber" : 50,
+          "fileName" : "model/account.go",
+          "excerpt" : "\treturn &Account{Name: name, Password: password, AuthorityID: authorityID}\n}\n\n// NewAccountWithPlainPassword is constructor. And it is encoded plain text password by using bcrypt.\nfunc NewAccountWithPlainPassword(name string, password string, authorityID uint) *Account {\n\thashed, _ := bcrypt.GenerateFromPassword([]byte(password), config.PasswordHashCost) /* <=== string */ \n\treturn &Account{Name: name, Password: string(hashed), AuthorityID: authorityID}\n}\n\n// FindByName returns accounts full matched given account name.\nfunc (a *Account) FindByName(rep repository.Repository, name string) (*Account, error) {",
+          "arguments" : null
+        }
+      ]
+    },
+    {
+      "sourceId" : "Data.Sensitive.AccountData.AccountName",
+      "occurrences" : [
+        {
+          "sample" : "username",
+          "lineNumber" : 28,
+          "columnNumber" : 41,
+          "fileName" : "service/account.go",
+          "excerpt" : "// AuthenticateByUsernameAndPassword authenticates by using username and plain text password.\nfunc (a *accountService) AuthenticateByUsernameAndPassword(username string, password string) (bool, *model.Account) {\n\trep := a.container.GetRepository()\n\tlogger := a.container.GetLogger()\n\taccount := model.Account{}\n\tresult, err := account.FindByName(rep, username) /* <=== string */ \n\tif err != nil {\n\t\tlogger.GetZapLogger().Errorf(err.Error())\n\t\treturn false, nil\n\t}\n",
+          "arguments" : null
+        },
+        {
+          "sample" : "UserName",
+          "lineNumber" : 7,
+          "columnNumber" : 11,
+          "fileName" : "model/dto/account.go",
+          "excerpt" : "\nimport \"encoding/json\"\n\n// LoginDto defines a data transfer object for login.\ntype LoginDto struct {\n\tUserName string `json:\"username\"` /* <===  */ \n\tPassword string `json:\"password\"`\n}\n\n// NewLoginDto is constructor.\nfunc NewLoginDto() *LoginDto {",
+          "arguments" : null
+        }
+      ]
+    },
+    {
+      "sourceId" : "Data.Sensitive.ContactData.Address",
+      "occurrences" : [
+        {
+          "sample" : "address",
+          "lineNumber" : 53,
+          "columnNumber" : 74,
+          "fileName" : "session/session.go",
+          "excerpt" : "\taddress := fmt.Sprintf(\"%s:%s\", conf.Redis.Host, conf.Redis.Port)\n\tstore, err := redistore.NewRediStore(conf.Redis.ConnectionPoolSize, \"tcp\", address, \"\", []byte(\"secret\"))\n\tif err != nil {\n\t\tlogger.GetZapLogger().Panicf(\"Failure redis connection, %s\", err.Error())\n\t}\n\tlogger.GetZapLogger().Infof(fmt.Sprintf(\"Success redis connection, %s\", address)) /* <=== fmt.Sprintf.<ReturnType>.<unknown> */ \n\treturn &session{store: store}\n}\n\nfunc (s *session) GetStore() sessions.Store {\n\treturn s.store",
+          "arguments" : null
+        }
+      ]
+    },
+    {
+      "sourceId" : "Data.Sensitive.OnlineIdentifiers.Cookies",
+      "occurrences" : [
+        {
+          "sample" : "cookie",
+          "lineNumber" : 154,
+          "columnNumber" : 47,
+          "fileName" : "test/unittest_util.go",
+          "excerpt" : "}\n\n// GetCookie func gets a cookie from a HTTP request.\nfunc GetCookie(rec *httptest.ResponseRecorder, cookieName string) string {\n\tparser := &http.Request{Header: http.Header{\"Cookie\": rec.Header()[\"Set-Cookie\"]}}\n\tif cookie, err := parser.Cookie(cookieName); cookie != nil && err == nil { /* <=== ANY */ \n\t\treturn cookie.Value\n\t}\n\treturn \"\"\n}",
+          "arguments" : null
+        }
+      ]
+    }
+  ],
+  "dataFlow" : {
+    "storages" : [
+    ],
+    "internal_apis" : [
+    ],
+    "leakages" : [
+    ],
+    "third_parties" : [
+    ]
+  },
+  "probableSinks" : [
+    "flag.String",
+    "flag.Parse",
+    "embed.FS.ReadFile",
+    "fmt.Sprintf",
+    "os.Exit",
+    "github.com/ybkuroki/go-webapp-sample/config.Config.<init>",
+    "github.com/ybkuroki/go-webapp-sample/container.container.<init>",
+    "github.com/ybkuroki/go-webapp-sample/controller.accountController.<init>",
+    "<unknown>.<echo>.Context.JSON",
+    "github.com/ybkuroki/go-webapp-sample/container.Container.GetConfig",
+    "github.com/ybkuroki/go-webapp-sample/container.Container.GetSession.<ReturnType>.<unknown>",
+    "github.com/ybkuroki/go-webapp-sample/container.Container.GetSession",
+    "github.com/ybkuroki/go-webapp-sample/service.AccountService.AuthenticateByUsernameAndPassword",
+    "<unknown>.<echo>.Context.NoContent",
+    "github.com/ybkuroki/go-webapp-sample/controller.bookController.<init>",
+    "github.com/ybkuroki/go-webapp-sample/service.BookService.FindByID",
+    "<unknown>.<echo>.Context.Param",
+    "ANY.Error",
+    "github.com/ybkuroki/go-webapp-sample/service.BookService.FindBooksByTitle",
+    "<unknown>.<echo>.Context.QueryParam",
+    "github.com/ybkuroki/go-webapp-sample/container.Container.GetMessages",
+    "github.com/ybkuroki/go-webapp-sample/service.BookService.CreateBook",
+    "github.com/ybkuroki/go-webapp-sample/service.BookService.UpdateBook",
+    "github.com/ybkuroki/go-webapp-sample/service.BookService.DeleteBook",
+    "github.com/ybkuroki/go-webapp-sample/controller.categoryController.<init>",
+    "github.com/ybkuroki/go-webapp-sample/service.CategoryService.FindAllCategories",
+    "github.com/ybkuroki/go-webapp-sample/controller.errorController.<init>",
+    "github.com/ybkuroki/go-webapp-sample/container.Container.GetLogger",
+    "net/http.StatusText",
+    "<unknown>.<echo>.Context.Response",
+    "github.com/ybkuroki/go-webapp-sample/container.Container.GetLogger.<ReturnType>.<unknown>",
+    "error.Error",
+    "github.com/ybkuroki/go-webapp-sample/controller.formatController.<init>",
+    "github.com/ybkuroki/go-webapp-sample/service.FormatService.FindAllFormats",
+    "github.com/ybkuroki/go-webapp-sample/controller.healthController.<init>",
+    "encoding/json.Marshal",
+    "github.com/ybkuroki/go-webapp-sample/docs.string",
+    "strings.Replace",
+    "github.com/alecthomas/template.New.<ReturnType>.<unknown>.Funcs",
+    "github.com/alecthomas/template.New",
+    "github.com/alecthomas/template.FuncMap.<init>",
+    "bytes.Buffer.String",
+    "github.com/swaggo/swag.Register",
+    "github.com/ybkuroki/go-webapp-sample/docs.s.<init>",
+    "append",
+    "gorm.io/gorm/utils.FileWithLineNum",
+    "time.Since",
+    "github.com/ybkuroki/go-webapp-sample/logger.fc",
+    "github.com/ybkuroki/go-webapp-sample/logger.logger.<init>",
+    "go.uber.org/zap.Logger.Sugar",
+    "github.com/ybkuroki/go-webapp-sample/logger.Logger.GetZapLogger.<ReturnType>.<unknown>",
+    "github.com/ybkuroki/go-webapp-sample/logger.Logger.GetZapLogger",
+    "go.uber.org/zap.Logger.Sync",
+    "errors.New",
+    "go.uber.org/zap.New",
+    "go.uber.org/zap/zapcore.NewCore",
+    "go.uber.org/zap/zapcore.NewConsoleEncoder",
+    "go.uber.org/zap/zapcore.NewJSONEncoder",
+    "make",
+    "len",
+    "go.uber.org/zap.CombineWriteSyncers",
+    "go.uber.org/zap/zapcore.AddSync",
+    "<unknown>.<lumberjack>.Logger.<init>",
+    "go.uber.org/zap.ErrorOutput",
+    "go.uber.org/zap.Development",
+    "go.uber.org/zap.AddCaller",
+    "go.uber.org/zap.AddStacktrace",
+    "<unknown>.<echo>.New",
+    "<unknown>.<echo>.Echo.Use",
+    "github.com/ybkuroki/go-webapp-sample/session.Middleware",
+    "io.Writer.Write",
+    "github.com/ybkuroki/go-webapp-sample/middleware",
+    "<unknown>.<echo>.Context.RealIP",
+    "strconv.Itoa",
+    "<unknown>.<echo>.Context.Request",
+    "<unknown>.<echo>.Context.Error",
+    "github.com/valyala/fasttemplate.New",
+    "github.com/valyala/fasttemplate.New.<ReturnType>.<unknown>.ExecuteFuncString",
+    "<unknown>.<echo>.Context.Path",
+    "github.com/labstack/echo/v4/middleware.StaticConfig.<init>",
+    "net/http.FS",
+    "github.com/labstack/echo/v4/middleware.StaticWithConfig",
+    "regexp.MustCompile.<ReturnType>.<unknown>.Match",
+    "regexp.MustCompile",
+    "github.com/ybkuroki/go-webapp-sample/container.Container.GetRepository",
+    "github.com/ybkuroki/go-webapp-sample/container.Container.GetRepository.<ReturnType>.<unknown>",
+    "github.com/ybkuroki/go-webapp-sample/model.Book.<init>",
+    "github.com/ybkuroki/go-webapp-sample/model.Category.<init>",
+    "github.com/ybkuroki/go-webapp-sample/model.Format.<init>",
+    "github.com/ybkuroki/go-webapp-sample/model.Account.<init>",
+    "github.com/ybkuroki/go-webapp-sample/model.Authority.<init>",
+    "golang.org/x/crypto/bcrypt.GenerateFromPassword",
+    "github.com/ybkuroki/go-webapp-sample/model",
+    "github.com/ybkuroki/go-webapp-sample/model.string",
+    "github.com/ybkuroki/go-webapp-sample/repository.Repository.Raw.<ReturnType>.<unknown>",
+    "github.com/ybkuroki/go-webapp-sample/repository.Repository.Raw",
+    "github.com/ybkuroki/go-webapp-sample/repository.Repository.Exec",
+    "gorm.io/gorm.DB.Scan",
+    "database/sql.Rows.Next",
+    "ANY.IsNone",
+    "ANY.Take",
+    "<unknown>.<optional>.Some",
+    "strconv.FormatUint",
+    "github.com/ybkuroki/go-webapp-sample/model.uint64",
+    "github.com/ybkuroki/go-webapp-sample/model/dto.LoginDto.<init>",
+    "github.com/ybkuroki/go-webapp-sample/model/dto.string",
+    "github.com/ybkuroki/go-webapp-sample/model/dto.BookDto.<init>",
+    "<unknown>.<validator>.New.<ReturnType>.<unknown>.Struct",
+    "<unknown>.<validator>.New",
+    "<unknown>.<validator>.ValidationErrors.StructField",
+    "<unknown>.<validator>.ValidationErrors.Tag",
+    "fmt.Sprint",
+    "github.com/ybkuroki/go-webapp-sample/model.Page.<init>",
+    "github.com/ybkuroki/go-webapp-sample/repository.bookRepository.<init>",
+    "github.com/ybkuroki/go-webapp-sample/repository.repository.<init>",
+    "gorm.io/gorm.Config.<init>",
+    "gorm.io/gorm.Open",
+    "gorm.io/driver/postgres.Open",
+    "gorm.io/driver/mysql.Open",
+    "github.com/glebarez/sqlite.Open",
+    "gorm.io/gorm.DB.Model",
+    "gorm.io/gorm.DB.Select",
+    "gorm.io/gorm.DB.First",
+    "gorm.io/gorm.DB.Raw",
+    "gorm.io/gorm.DB.Preload",
+    "gorm.io/gorm.DB.Scopes",
+    "gorm.io/gorm.DB.ScanRows",
+    "gorm.io/gorm.DB.DB",
+    "gorm.io/gorm.DB.DB.<ReturnType>.<unknown>",
+    "gorm.io/gorm.DB.Migrator.<ReturnType>.<unknown>",
+    "gorm.io/gorm.DB.Migrator",
+    "gorm.io/gorm.DB.AutoMigrate",
+    "gorm.io/gorm.DB.Begin",
+    "github.com/ybkuroki/go-webapp-sample/repository.fc",
+    "gorm.io/gorm.DB.Begin.<ReturnType>.<unknown>",
+    "github.com/ybkuroki/go-webapp-sample/middleware.CORSWithConfig",
+    "github.com/ybkuroki/go-webapp-sample/middleware.CORSConfig.<init>",
+    "github.com/ybkuroki/go-webapp-sample/middleware.Recover",
+    "github.com/ybkuroki/go-webapp-sample/controller.BookController.GetBook",
+    "github.com/ybkuroki/go-webapp-sample/controller.BookController.GetBookList",
+    "github.com/ybkuroki/go-webapp-sample/controller.BookController.CreateBook",
+    "github.com/ybkuroki/go-webapp-sample/controller.BookController.UpdateBook",
+    "github.com/ybkuroki/go-webapp-sample/controller.BookController.DeleteBook",
+    "<unknown>.<echo>.Echo.GET",
+    "<unknown>.<echo>.Echo.POST",
+    "<unknown>.<echo>.Echo.PUT",
+    "<unknown>.<echo>.Echo.DELETE",
+    "github.com/ybkuroki/go-webapp-sample/controller.CategoryController.GetCategoryList",
+    "github.com/ybkuroki/go-webapp-sample/controller.FormatController.GetFormatList",
+    "github.com/ybkuroki/go-webapp-sample/controller.AccountController.GetLoginStatus",
+    "github.com/ybkuroki/go-webapp-sample/controller.AccountController.GetLoginAccount",
+    "github.com/ybkuroki/go-webapp-sample/controller.AccountController.Login",
+    "github.com/ybkuroki/go-webapp-sample/controller.AccountController.Logout",
+    "github.com/ybkuroki/go-webapp-sample/controller.HealthController.GetHealthCheck",
+    "github.com/ybkuroki/go-webapp-sample/service.accountService.<init>",
+    "github.com/ybkuroki/go-webapp-sample/service.bookService.<init>",
+    "github.com/ybkuroki/go-webapp-sample/service.categoryService.<init>",
+    "github.com/ybkuroki/go-webapp-sample/service.formatService.<init>",
+    "github.com/ybkuroki/go-webapp-sample/session.session.<init>",
+    "github.com/gorilla/sessions.NewCookieStore",
+    "github.com/ybkuroki/go-webapp-sample/session",
+    "<unknown>.<redistore>.NewRediStore",
+    "github.com/gorilla/sessions.Store.Get",
+    "github.com/gorilla/sessions.Options.<init>",
+    "fmt.Errorf",
+    "github.com/ybkuroki/go-webapp-sample/session.string",
+    "encoding/json.Unmarshal",
+    "go.uber.org/zap.Config.Build",
+    "go.uber.org/zap.Config.Build.<ReturnType>",
+    "go.uber.org/zap/zaptest/observer.New",
+    "go.uber.org/zap.New.<ReturnType>.<unknown>",
+    "go.uber.org/zap.NewAtomicLevel",
+    "go.uber.org/zap.NewAtomicLevel.<ReturnType>.<unknown>",
+    "go.uber.org/zap.Config.<init>",
+    "go.uber.org/zap/zapcore.EncoderConfig.<init>",
+    "github.com/ybkuroki/go-webapp-sample/test.string",
+    "net/http/httptest.NewRequest",
+    "strings.NewReader",
+    "net/http/httptest.NewRequest.<ReturnType>.<unknown>.Header.<FieldAccess>",
+    "net/http.Header.<init>",
+    "net/http/httptest.ResponseRecorder.Header",
+    "embed.FS.Open",
+    "bufio.NewScanner",
+    "bufio.NewScanner.<ReturnType>.<unknown>.Scan",
+    "bufio.NewScanner.<ReturnType>.<unknown>.Text",
+    "strings.HasPrefix",
+    "strings.Contains",
+    "strings.Index",
+    "strings.TrimSpace",
+    "github.com/ybkuroki/go-webapp-sample/util.requestBuilder.<init>",
+    "github.com/ybkuroki/go-webapp-sample/util.requestURL.<init>",
+    "strings.HasSuffix",
+    "strconv.Atoi",
+    "github.com/ybkuroki/go-webapp-sample/util.uint",
+    "github.com/ybkuroki/go-webapp-sample/docs.swaggerInfo.<init>"
+  ],
+  "createdAt" : 1755817803691,
+  "sinkProcessing" : [
+    {
+      "sinkId" : "Storage.ORM.GORM.Read",
+      "occurrences" : [
+        {
+          "sample" : "rep.db.Find(out, where...)",
+          "lineNumber" : 99,
+          "columnNumber" : 9,
+          "fileName" : "repository/repository.go",
+          "excerpt" : "\treturn rep.db.Select(query, args...)\n}\n\n// Find find records that match given conditions.\nfunc (rep *repository) Find(out interface{}, where ...interface{}) *gorm.DB {\n\treturn rep.db.Find(out, where...) /* <=== gorm.io/gorm.DB.Find */ \n}\n\n// Exec exec given SQL using by gorm.DB.\nfunc (rep *repository) Exec(sql string, values ...interface{}) *gorm.DB {\n\treturn rep.db.Exec(sql, values...)",
+          "arguments" : null
+        }
+      ]
+    },
+    {
+      "sinkId" : "Sinks.ThirdParties.API",
+      "occurrences" : [
+        {
+          "sample" : "http.Request{Header: http.Header{\"Cookie\": rec.Header()[\"Set-Cookie\"]}}",
+          "lineNumber" : 153,
+          "columnNumber" : 13,
+          "fileName" : "test/unittest_util.go",
+          "excerpt" : "\treturn req\n}\n\n// GetCookie func gets a cookie from a HTTP request.\nfunc GetCookie(rec *httptest.ResponseRecorder, cookieName string) string {\n\tparser := &http.Request{Header: http.Header{\"Cookie\": rec.Header()[\"Set-Cookie\"]}} /* <=== net/http.Request.<init> */ \n\tif cookie, err := parser.Cookie(cookieName); cookie != nil && err == nil {\n\t\treturn cookie.Value\n\t}\n\treturn \"\"\n}",
+          "arguments" : null
+        }
+      ]
+    },
+    {
+      "sinkId" : "Storages.ORM.GORM.Write",
+      "occurrences" : [
+        {
+          "sample" : "rep.db.Save(value)",
+          "lineNumber" : 124,
+          "columnNumber" : 9,
+          "fileName" : "repository/repository.go",
+          "excerpt" : "\treturn rep.db.Create(value)\n}\n\n// Save update value in database, if the value doesn't have primary key, will insert it.\nfunc (rep *repository) Save(value interface{}) *gorm.DB {\n\treturn rep.db.Save(value) /* <=== gorm.io/gorm.DB.Save */ \n}\n\n// Update update value in database\nfunc (rep *repository) Updates(value interface{}) *gorm.DB {\n\treturn rep.db.Updates(value)",
+          "arguments" : null
+        }
+      ]
+    }
+  ],
+  "PropertyFileSkippedBySize" : {
+    "currentFileSizeLimit" : "5",
+    "skipLists" : [
+    ]
+  },
+  "localScanPath" : "/tmp/repo",
+  "sources" : [
+    {
+      "sourceType" : "Data Element",
+      "id" : "Data.Sensitive.AccountData.AccountPassword",
+      "name" : "Account Password",
+      "category" : "Account Data",
+      "sensitivity" : "medium",
+      "isSensitive" : false,
+      "tags" : {
+        "law" : "GDPR"
+      }
+    },
+    {
+      "sourceType" : "Data Element",
+      "id" : "Data.Sensitive.AccountData.AccountName",
+      "name" : "Account Name",
+      "category" : "Account Data",
+      "sensitivity" : "medium",
+      "isSensitive" : false,
+      "tags" : {
+        "law" : "GDPR"
+      }
+    },
+    {
+      "sourceType" : "Data Element",
+      "id" : "Data.Sensitive.ContactData.Address",
+      "name" : "Address",
+      "category" : "Contact Data",
+      "sensitivity" : "medium",
+      "isSensitive" : false,
+      "tags" : {
+        "law" : "GDPR"
+      }
+    },
+    {
+      "sourceType" : "Data Element",
+      "id" : "Data.Sensitive.OnlineIdentifiers.Cookies",
+      "name" : "Cookies",
+      "category" : "Online Identifiers",
+      "sensitivity" : "medium",
+      "isSensitive" : false,
+      "tags" : {
+        "law" : "GDPR"
+      }
+    }
+  ]
+}

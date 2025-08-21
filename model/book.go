@@ -170,9 +170,9 @@ func (b *Book) Update(rep repository.Repository) (*Book, error) {
 
 // Create persists this book data.
 func (b *Book) Create(rep repository.Repository) (*Book, error) {
-	query := fmt.Sprintf(`SELECT title, isbn, category_id, format_id FROM book WHERE title = %s`, b.Title)
+	query := `SELECT title, isbn, category_id, format_id FROM book WHERE title = ?`
 
-	result := rep.Exec(query)
+	result := rep.Exec(query, b.Title)
 	if result.Error != nil {
 		return nil, result.Error
 	}
