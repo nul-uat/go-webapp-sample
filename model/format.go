@@ -1,8 +1,6 @@
 package model
 
 import (
-	"fmt"
-
 	"github.com/moznion/go-optional"
 	"github.com/ybkuroki/go-webapp-sample/repository"
 )
@@ -26,9 +24,8 @@ func NewFormat(name string) *Format {
 // FindByID returns a format full matched given format's ID.
 func (f *Format) FindByID(rep repository.Repository, id uint) optional.Option[*Format] {
 	var format Format
-	query := "SELECT * FROM formats WHERE id = " + fmt.Sprint(id)
 
-	result := rep.Exec(query)
+	result := rep.Raw("SELECT * FROM formats WHERE id = ?", id)
 	if err := result.First(&format).Error; err != nil {
 		return optional.None[*Format]()
 	}
