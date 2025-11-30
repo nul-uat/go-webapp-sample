@@ -25,7 +25,7 @@ func NewFormat(name string) *Format {
 func (f *Format) FindByID(rep repository.Repository, id uint) optional.Option[*Format] {
 	var format Format
 
-	result := rep.Raw("SELECT * FROM formats WHERE id = ?", id)
+	result := rep.Raw("SELECT * FROM format_master WHERE id = ?", id)
 	if err := result.First(&format).Error; err != nil {
 		return optional.None[*Format]()
 	}
