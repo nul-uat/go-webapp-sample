@@ -60,6 +60,8 @@ func setBookController(e *echo.Echo, container container.Container) {
 	book := controller.NewBookController(container)
 	e.GET(config.APIBooksID, func(c echo.Context) error { return book.GetBook(c) })
 	e.GET(config.APIBooks, func(c echo.Context) error { return book.GetBookList(c) })
+	e.GET("/api/books/search", controller.SearchBooksByAuthor(container))
+	e.GET("/api/books/export", controller.ExportBooks)
 	e.POST(config.APIBooks, func(c echo.Context) error { return book.CreateBook(c) })
 	e.PUT(config.APIBooksID, func(c echo.Context) error { return book.UpdateBook(c) })
 	e.DELETE(config.APIBooksID, func(c echo.Context) error { return book.DeleteBook(c) })
